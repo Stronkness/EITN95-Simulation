@@ -8,11 +8,11 @@ public class MainSimulation extends GlobalSimulation{
     	Event actEvent;
     	State actState = new State(); // The state that shoud be used
     	// Some events must be put in the event list at the beginning
-        insertEvent(ARRIVAL_A, 0);  
+        insertEvent(ARRIVAL, 0);  
         insertEvent(MEASURE, 5);
         
         // The main simulation loop
-    	while (time < 1000){
+    	while (time < 5000){
     		actEvent = eventList.fetchEvent();
     		time = actEvent.eventTime;
     		actState.treatEvent(actEvent);
