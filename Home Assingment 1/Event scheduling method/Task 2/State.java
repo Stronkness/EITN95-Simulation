@@ -5,7 +5,7 @@ class State extends GlobalSimulation{
 	
 	// Here follows the state variables and other variables that might be needed
 	// e.g. for measurements
-	public int numberInQueue = 0, accumulated = 0, noMeasurements = 0, numberofA = 0, numberofB = 0;
+	public int numberInQueue = 0, accumulated = 0, noMeasurements = 0;
 	public static final int ARRIVAL_A = 1, READY_A = 2, MEASURE = 3; // The events, add or remove if needed!
 	public static final int ARRIVAL_B = 4, READY_B = 5; // The events, add or remove if needed!
 	Random slump = new Random(); // This is just a random number generator
@@ -63,7 +63,7 @@ class State extends GlobalSimulation{
 	 * first element in the queue
 	 */
 	private void ready_A(){
-		String temp = customers.poll();
+		String temp = customers.poll(); // removeFirst() not working as it gaev exception when null
 		if(temp != null){
 			if(temp.equals("B")) insertEvent(READY_A, time + 0.004); // 1 is d, delay
 			else insertEvent(ARRIVAL_B, time + 1);
@@ -76,7 +76,7 @@ class State extends GlobalSimulation{
 	}
 	
 	private void ready_B(){
-		numberofB--;
+		//numberofB--;
 		// insertEvent?
 		//TODO: Check priority
 	}
