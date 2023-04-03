@@ -45,13 +45,13 @@ class State extends GlobalSimulation{
 			insertEvent(READY_A, time + 0.002);
 		}
 			
-		customers.addLast("B");
+		customers.addLast("A");
 		insertEvent(ARRIVAL_A, time + Math.log(slump.nextDouble())*(-(double)1/150)); // Kanske ARRIVAL_B??
 	}
 	
 	private void arrival_B(){
 		if (numberInQueue() == 0) insertEvent(READY_A, time + 0.004);
-		customers.addFirst("A");
+		customers.addFirst("B");
 	}
 	
 	/* The idea here is to first check if the head in the customers list
@@ -65,7 +65,7 @@ class State extends GlobalSimulation{
 	private void ready_A(){
 		String temp = customers.poll(); // removeFirst() not working as it gaev exception when null
 		if(temp != null){
-			if(temp.equals("B")) insertEvent(READY_A, time + 0.004); // 1 is d, delay
+			if(temp.equals("A")) insertEvent(READY_A, time + 0.002); // 1 is d, delay
 			else insertEvent(ARRIVAL_B, time + 1);
 		}
 

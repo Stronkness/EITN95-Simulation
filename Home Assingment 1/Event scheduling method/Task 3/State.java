@@ -7,7 +7,9 @@ class State extends GlobalSimulation{
 
 	// Here follows the state variables and other variables that might be needed
 	// e.g. for measurements
-	public int numberInQ1 = 0, accumulated = 0, noMeasurements = 0, noRejectionQ1 = 0, numberInQ2 = 0, arrivalsQ1 = 0;
+	public int numberInQ1 = 0, accumulated = 0, noMeasurements = 0, noRejectionQ1 = 0, numberInQ2 = 0, arrivalsQ1 = 0, arrivalsQ2 = 0, numberOfDone = 0;
+	public LinkedList<Double> times = new LinkedList<Double>();
+	public double time = 0;
 
 	Random slump = new Random(); // This is just a random number generator
 	
@@ -43,21 +45,16 @@ class State extends GlobalSimulation{
 		// Arrivals
 		arrivalsQ1++;
 		if (numberInQ1 == 0){
-			insertEvent(READY, time + Math.log(1-slump.nextDouble())/(-2.1));
+			insertEvent(READY, time + Math.log(slump.nextDouble())*(-(double)1));
 		}
-		insertEvent(ARRIVAL, time + 5); // Constant
-		if (numberInQ1 <= 10) numberInQ1++;
-		else {
-			noRejectionQ1++;
-			System.out.println("hääär");
-		}
-
+		insertEvent(ARRIVAL, time + Math.log(slump.nextDouble())*(-(double)1.1));
+		numberInQ1++;
 	}
 	
 	private void readyQ1(){
 		numberInQ1--;
 		if (numberInQ1 > 0){
-			insertEvent(READY, time + Math.log(1-slump.nextDouble())/(-2.1));
+			insertEvent(READY, time + Math.log(slump.nextDouble())*(-(double)1));
 		}
 		// Arrival Q2?
 		insertEvent(ARRIVAL_Q2, time);
@@ -65,22 +62,24 @@ class State extends GlobalSimulation{
 	
 	public void arrivalQ2(){
 		if(numberInQ2 == 0){
-			insertEvent(READY, time + 2);
+			insertEvent(READY_Q2, time + Math.log(slump.nextDouble())*(-(double)1));
 		}
 		numberInQ2++;
 	}
 
 	public void readyQ2(){
 		numberInQ2--;
-		if (numberInQ2 == 0){
-			insertEvent(READY, time + 2);
+		numberOfDone++;
+		if (numberInQ2 > 0){
+			time += Math.log(slump.nextDouble())*(-(double)1);
+			insertEvent(READY_Q2, time + Math.log(slump.nextDouble())*(-(double)1));
 		}
 	}
 
 	private void measure(){
-		accumulated = accumulated + numberInQ2;
+		accumulated += numberInQ1 + numberInQ2;
 		noMeasurements++;
-		insertEvent(MEASURE, time + Math.log(1-slump.nextDouble())/(-5));
+		insertEvent(MEASURE, time + Math.log(slump.nextDouble())*(-(double)5));
 	}
 
 }

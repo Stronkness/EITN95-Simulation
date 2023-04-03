@@ -20,7 +20,7 @@ public class MainSimulation extends GlobalSimulation{
     	
     	// Printing the result of the simulation, in this case a mean value
     	System.out.println(1.0*actState.accumulated/actState.noMeasurements);
-		System.out.println(actState.noRejectionQ1/actState.arrivalsQ1);
+		System.out.println(actState.time/actState.numberOfDone);
 
     }
 }
