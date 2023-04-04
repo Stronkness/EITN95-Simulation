@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-//Denna klass ärver Proc, det gör att man kan använda time och signalnamn utan punktnotation
+//Denna klass rver Proc, det gÃ¶r att man kan anvanda time och signalnamn utan punktnotation
 //It inherits Proc so that we can use time and the signal names without dot notation 
 
 class Gen extends Proc{
@@ -10,12 +10,12 @@ class Gen extends Proc{
 	//The random number generator is started:
 	Random slump = new Random();
 
-	//Generatorn har två parametrar:
+	//Generatorn har tvÃ¥ parametrar:
 	//There are two parameters:
 	public Proc sendTo;    //Anger till vilken process de genererade kunderna ska skickas //Where to send customers
-	public double lambda;  //Hur många per sekund som ska generas //How many to generate per second
+	public double lambda;  //Hur mÃ¥nga per sekund som ska generas //How many to generate per second
 
-	//Här nedan anger man vad som ska göras när en signal kommer //What to do when a signal arrives
+	//HÃ¤r nedan anger man vad som ska gÃ¶ras nÃ¤r en signal kommer //What to do when a signal arrives
 	public void TreatSignal(Signal x){
 		switch (x.signalType){
 			case READY:{

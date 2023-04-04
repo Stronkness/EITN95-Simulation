@@ -36,7 +36,7 @@ public class MainSimulation extends Global{
     	// Detta  r simuleringsloopen:
     	// This is the main loop
 
-    	while (time < 100000){
+    	while (Q1.numberOfArrivals < 20){
     		actSignal = SignalList.FetchSignal();
     		time = actSignal.arrivalTime;
     		actSignal.destination.TreatSignal(actSignal);
@@ -45,7 +45,7 @@ public class MainSimulation extends Global{
     	//Slutligen skrivs resultatet av simuleringen ut nedan:
     	//Finally the result of the simulation is printed below:
 
-    	System.out.println("Mean number of customers in queuing system: " + 1.0*Q1.accumulated/Q1.noMeasurements);
-
+    	System.out.println("average queuing time for Special: " + Q1.time/Q1.specialDone);
+    	System.out.println("average queuing time for Normal: " + Q1.time/Q1.normalDone);
     }
 }
