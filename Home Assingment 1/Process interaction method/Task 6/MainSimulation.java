@@ -44,6 +44,8 @@ public class MainSimulation extends Global{
 		queue.add(Q5);
 		//QS[] q = {Q1,Q2,Q3,Q4,Q5};
 		QS[] receivers = {Q1,Q3};
+
+		LinkedList<QS> test = (LinkedList)queue.clone();
 		
     	Gen Generator = new Gen();
     	Generator.lambda = 9; //Generator ska generera nio kunder per sekund  //Generator shall generate 9 customers per second
@@ -114,7 +116,6 @@ public class MainSimulation extends Global{
 
     	//Slutligen skrivs resultatet av simuleringen ut nedan:
     	//Finally the result of the simulation is printed below:
-		System.out.println(total_time);
     	System.out.println("Mean time before breaking down the system: " + 1.0*total_time/5);
 
     }
