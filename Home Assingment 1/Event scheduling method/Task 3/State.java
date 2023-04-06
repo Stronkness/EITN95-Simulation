@@ -45,16 +45,16 @@ class State extends GlobalSimulation{
 		// Arrivals
 		arrivalsQ1++;
 		if (numberInQ1 == 0){
-			insertEvent(READY, time + Math.log(slump.nextDouble())*(-(double)1));
+			insertEvent(READY, time + Math.abs((double)1 * Math.log(1 - slump.nextDouble())));
 		}
-		insertEvent(ARRIVAL, time + Math.log(slump.nextDouble())*(-(double)1.1));
+		insertEvent(ARRIVAL, time + Math.abs((double)2 * Math.log(1 - slump.nextDouble())));
 		numberInQ1++;
 	}
 	
 	private void readyQ1(){
 		numberInQ1--;
 		if (numberInQ1 > 0){
-			insertEvent(READY, time + Math.log(slump.nextDouble())*(-(double)1));
+			insertEvent(READY, time + Math.abs((double)1 * Math.log(1 - slump.nextDouble())));
 		}
 		// Arrival Q2?
 		insertEvent(ARRIVAL_Q2, time);
@@ -62,7 +62,7 @@ class State extends GlobalSimulation{
 	
 	public void arrivalQ2(){
 		if(numberInQ2 == 0){
-			insertEvent(READY_Q2, time + Math.log(slump.nextDouble())*(-(double)1));
+			insertEvent(READY_Q2, time + Math.abs((double)1 * Math.log(1 - slump.nextDouble())));
 		}
 		numberInQ2++;
 	}
@@ -71,15 +71,15 @@ class State extends GlobalSimulation{
 		numberInQ2--;
 		numberOfDone++;
 		if (numberInQ2 > 0){
-			time += Math.log(slump.nextDouble())*(-(double)1);
-			insertEvent(READY_Q2, time + Math.log(slump.nextDouble())*(-(double)1));
+			time += Math.abs((double)1 * Math.log(1 - slump.nextDouble()));
+			insertEvent(READY_Q2, time + Math.abs((double)1 * Math.log(1 - slump.nextDouble())));
 		}
 	}
 
 	private void measure(){
 		accumulated += numberInQ1 + numberInQ2;
 		noMeasurements++;
-		insertEvent(MEASURE, time + Math.log(slump.nextDouble())*(-(double)5));
+		insertEvent(MEASURE, time + Math.abs((double)5 * Math.log(1 - slump.nextDouble())));
 	}
 
 }

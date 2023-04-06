@@ -34,6 +34,7 @@ class State extends GlobalSimulation{
 		}
 	}
 	
+	// Math.abs(-2.1 * Math.log(1 - slump.nextDouble()))
 	
 	// The following methods defines what should be done when an event takes place. This could
 	// have been placed in the case in treatEvent, but often it is simpler to write a method if 
@@ -43,13 +44,12 @@ class State extends GlobalSimulation{
 		// Arrivals
 		arrivalsQ1++;
 		if (numberInQ1 == 0){
-			insertEvent(READY, time + Math.log(1-slump.nextDouble())/(-2.1));
+			insertEvent(READY, time + Math.abs(-2.1 * Math.log(1 - slump.nextDouble())));
 		}
 		insertEvent(ARRIVAL, time + 5); // Constant
 		if (numberInQ1 <= 10) numberInQ1++;
 		else {
 			noRejectionQ1++;
-			System.out.println("hääär");
 		}
 
 	}
@@ -57,7 +57,7 @@ class State extends GlobalSimulation{
 	private void readyQ1(){
 		numberInQ1--;
 		if (numberInQ1 > 0){
-			insertEvent(READY, time + Math.log(1-slump.nextDouble())/(-2.1));
+			insertEvent(READY, time + Math.abs(-2.1 * Math.log(1 - slump.nextDouble())));
 		}
 		// Arrival Q2?
 		insertEvent(ARRIVAL_Q2, time);
@@ -65,7 +65,7 @@ class State extends GlobalSimulation{
 	
 	public void arrivalQ2(){
 		if(numberInQ2 == 0){
-			insertEvent(READY, time + 2);
+			insertEvent(READY, time);
 		}
 		numberInQ2++;
 	}
@@ -80,7 +80,7 @@ class State extends GlobalSimulation{
 	private void measure(){
 		accumulated = accumulated + numberInQ2;
 		noMeasurements++;
-		insertEvent(MEASURE, time + Math.log(1-slump.nextDouble())/(-5));
+		insertEvent(MEASURE, time + Math.abs(-5 * Math.log(1 - slump.nextDouble())));
 	}
 
 }

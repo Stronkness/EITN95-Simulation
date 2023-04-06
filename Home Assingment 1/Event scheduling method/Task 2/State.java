@@ -46,7 +46,7 @@ class State extends GlobalSimulation{
 		}
 			
 		customers.addLast("A");
-		insertEvent(ARRIVAL_A, time + Math.log(slump.nextDouble())*(-(double)1/150)); // Kanske ARRIVAL_B??
+		insertEvent(ARRIVAL_A, time + Math.abs((double)1/150 * Math.log(1 - slump.nextDouble()))); // Kanske ARRIVAL_B??
 	}
 	
 	private void arrival_B(){
@@ -65,7 +65,7 @@ class State extends GlobalSimulation{
 	private void ready_A(){
 		String temp = customers.poll(); // removeFirst() not working as it gaev exception when null
 		if(temp != null){
-			if(temp.equals("A")) insertEvent(READY_A, time + 0.002); // 1 is d, delay
+			if(temp.equals("A")) insertEvent(READY_A, time + 1); // 1 is d, delay
 			else insertEvent(ARRIVAL_B, time + 1);
 		}
 
