@@ -19,8 +19,12 @@ public class MainSimulation extends GlobalSimulation{
     	}
     	
     	// Printing the result of the simulation, in this case a mean value
-    	System.out.println(1.0*actState.accumulated/actState.noMeasurements);
-		System.out.println(1.0*actState.noRejectionQ1/actState.arrivalsQ1);
+    	System.out.println("mean nbr cust Q1:" + " " + 1.0*actState.accumulatedQ1/actState.noMeasurements);
+		System.out.println("mean nbr cust Q2:" + " " + 1.0*actState.accumulatedQ2/actState.noMeasurements);
+		System.out.println("Rejected:" + " " + 1.0*actState.noRejectionQ1);
+		System.out.println("arrivals Q1:" + " " + 1.0*actState.arrivalsQ1);
+		System.out.println("accumulated Q2:" + " " + 1.0*actState.accumulatedQ2);
+		System.out.println("mean nbr rejected Q1:" + " " +1.0*actState.noRejectionQ1/actState.arrivalsQ1);
 
     }
 }

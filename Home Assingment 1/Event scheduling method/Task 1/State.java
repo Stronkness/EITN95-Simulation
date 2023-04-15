@@ -3,11 +3,11 @@ import java.io.*;
 
 class State extends GlobalSimulation{
 	
-	public static final int ARRIVAL_Q2 = 4, READY_Q2 = 5;
+	public static final int  READY_Q2 = 4;
 
 	// Here follows the state variables and other variables that might be needed
 	// e.g. for measurements
-	public int numberInQ1 = 0, accumulated = 0, noMeasurements = 0, noRejectionQ1 = 0, numberInQ2 = 0, arrivalsQ1 = 0;
+	public int numberInQ1 = 0, accumulatedQ1 = 0, noMeasurements = 0, noRejectionQ1 = 0, numberInQ2 = 0, arrivalsQ1 = 0, accumulatedQ2 = 0;
 
 	Random slump = new Random(); // This is just a random number generator
 	
@@ -25,62 +25,57 @@ class State extends GlobalSimulation{
 			case MEASURE:
 				measure();
 				break;
-			case ARRIVAL_Q2:
-				arrivalQ2();
-				break;
 			case READY_Q2:
 				readyQ2();
 				break;
 		}
 	}
 	
-	// Math.abs(-2.1 * Math.log(1 - slump.nextDouble()))
 	
 	// The following methods defines what should be done when an event takes place. This could
 	// have been placed in the case in treatEvent, but often it is simpler to write a method if 
 	// things are getting more complicated than this.
 	
 	private void arrival(){
-		// Arrivals
+		// Arrivals Q1
 		arrivalsQ1++;
 		if (numberInQ1 == 0){
-			insertEvent(READY, time + Math.abs(-2.1 * Math.log(1 - slump.nextDouble())));
+			insertEvent(READY, time + (Math.log(1-slump.nextDouble()))/(1/-2.1));
 		}
-		insertEvent(ARRIVAL, time + 5); // Constant
-		if (numberInQ1 <= 10) numberInQ1++;
-		else {
+		numberInQ1++;
+		if (numberInQ1 == 11){
 			noRejectionQ1++;
+			numberInQ1--;					//no rejected in Q1
+			//System.out.println("hääär");	
 		}
-
+		// if not first and not rejected: arrives to Q1
+		insertEvent(ARRIVAL, time + 1); 				//Constant interarrival time Q1, tasks try: 1 sec, 2 sec and 5 sec
 	}
 	
 	private void readyQ1(){
 		numberInQ1--;
 		if (numberInQ1 > 0){
-			insertEvent(READY, time + Math.abs(-2.1 * Math.log(1 - slump.nextDouble())));
+			insertEvent(READY, time + (Math.log(1-slump.nextDouble()))/(1/-2.1));
 		}
-		// Arrival Q2?
-		insertEvent(ARRIVAL_Q2, time);
-	}
-	
-	public void arrivalQ2(){
+		// Arrival Q2
 		if(numberInQ2 == 0){
-			insertEvent(READY, time);
+			insertEvent(READY_Q2, time + 2);  //Constant Q2 service time 2 seconds
 		}
 		numberInQ2++;
 	}
-
+	
 	public void readyQ2(){
 		numberInQ2--;
-		if (numberInQ2 == 0){
-			insertEvent(READY, time + 2);
+		if (numberInQ2 > 0){
+			insertEvent(READY_Q2, time + 2);  //Constant Q2 service time 2 seconds
 		}
 	}
 
 	private void measure(){
-		accumulated = accumulated + numberInQ2;
+		accumulatedQ1 = accumulatedQ1 + numberInQ1;
+		accumulatedQ2 = accumulatedQ2 + numberInQ2;
 		noMeasurements++;
-		insertEvent(MEASURE, time + Math.abs(-5 * Math.log(1 - slump.nextDouble())));
+		insertEvent(MEASURE, time + (Math.log(1-slump.nextDouble()))/(1/-5.0));  //Times between measurements exp. distributed with mean 5 seconds
 	}
 
 }

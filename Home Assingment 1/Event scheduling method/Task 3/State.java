@@ -7,9 +7,9 @@ class State extends GlobalSimulation{
 
 	// Here follows the state variables and other variables that might be needed
 	// e.g. for measurements
-	public int numberInQ1 = 0, accumulated = 0, noMeasurements = 0, noRejectionQ1 = 0, numberInQ2 = 0, arrivalsQ1 = 0, arrivalsQ2 = 0, numberOfDone = 0;
+	public int numberInQ1 = 0, accumulated = 0, noMeasurements = 0, numberInQ2 = 0, arrivalsQ1 = 0, numberOfDone = 0;
 	public LinkedList<Double> times = new LinkedList<Double>();
-	public double time = 0;
+	public double accumulatedTime = 0;
 
 	Random slump = new Random(); // This is just a random number generator
 	
@@ -27,9 +27,6 @@ class State extends GlobalSimulation{
 			case MEASURE:
 				measure();
 				break;
-			case ARRIVAL_Q2:
-				arrivalQ2();
-				break;
 			case READY_Q2:
 				readyQ2();
 				break;
@@ -44,42 +41,42 @@ class State extends GlobalSimulation{
 	private void arrival(){
 		// Arrivals
 		arrivalsQ1++;
+		double arrivalTime = time;
+		times.add(arrivalTime);
 		if (numberInQ1 == 0){
-			insertEvent(READY, time + Math.abs((double)1 * Math.log(1 - slump.nextDouble())));
+			insertEvent(READY, time +(Math.log(1-slump.nextDouble()))/(1/-1.0)); //Q1 service time exp with mean 1 sec
 		}
-		insertEvent(ARRIVAL, time + Math.abs((double)2 * Math.log(1 - slump.nextDouble())));
+		insertEvent(ARRIVAL, time + (Math.log(1-slump.nextDouble()))/(1/-2.0)); // TASKS: 2, 1.5, 1.1
 		numberInQ1++;
 	}
 	
 	private void readyQ1(){
 		numberInQ1--;
 		if (numberInQ1 > 0){
-			insertEvent(READY, time + Math.abs((double)1 * Math.log(1 - slump.nextDouble())));
+			insertEvent(READY, time + (Math.log(1-slump.nextDouble()))/(1/-1.0)); //Q1 service time exp with mean 1 sec
 		}
-		// Arrival Q2?
-		insertEvent(ARRIVAL_Q2, time);
-	}
-	
-	public void arrivalQ2(){
+		// Arrival Q2
 		if(numberInQ2 == 0){
-			insertEvent(READY_Q2, time + Math.abs((double)1 * Math.log(1 - slump.nextDouble())));
+			insertEvent(READY_Q2, time + (Math.log(1-slump.nextDouble()))/(1/-1.0));  //Q2 service time exp with mean 1 sec
 		}
 		numberInQ2++;
 	}
-
+	
 	public void readyQ2(){
 		numberInQ2--;
 		numberOfDone++;
+		double doneTime = time;
+		double queuingTime = (doneTime - times.poll()); // the time a customer have been in the queue
+		accumulatedTime += queuingTime; 
 		if (numberInQ2 > 0){
-			time += Math.abs((double)1 * Math.log(1 - slump.nextDouble()));
-			insertEvent(READY_Q2, time + Math.abs((double)1 * Math.log(1 - slump.nextDouble())));
+			insertEvent(READY_Q2, time +(Math.log(1-slump.nextDouble()))/(1/-1.0)); //Q2 service time exp with mean 1 sec
 		}
 	}
 
 	private void measure(){
 		accumulated += numberInQ1 + numberInQ2;
 		noMeasurements++;
-		insertEvent(MEASURE, time + Math.abs((double)5 * Math.log(1 - slump.nextDouble())));
+		insertEvent(MEASURE, time + (Math.log(1-slump.nextDouble()))/(1/-2.0));
 	}
 
 }
