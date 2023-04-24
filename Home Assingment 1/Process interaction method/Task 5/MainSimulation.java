@@ -75,9 +75,9 @@ public class MainSimulation extends Global{
 		QS[] q = {Q1,Q2,Q3,Q4,Q5};
 		
     	Gen Generator = new Gen();
-    	Generator.lambda = 9; //Generator ska generera nio kunder per sekund  //Generator shall generate 9 customers per second
+    	Generator.lambda = 1/2.0; // mean average time 0.11 , 0.15, 2.0 Generator ska generera nio kunder per sekund  //Generator shall generate 9 customers per second
     	Generator.sendTo = null; //De genererade kunderna ska skickas till k systemet QS  // The generated customers shall be sent to Q1
-
+		
     	//H r nedan skickas de f rsta signalerna f r att simuleringen ska komma ig ng.
     	//To start the simulation the first signals are put in the signal list
 
@@ -87,12 +87,13 @@ public class MainSimulation extends Global{
 		SignalList.SendSignal(MEASURE, Q3, time);
 		SignalList.SendSignal(MEASURE, Q4, time);
 		SignalList.SendSignal(MEASURE, Q5, time);
-
+		Generator.qs = q;
     	// Detta  r simuleringsloopen:
     	// This is the main loop
 
     	while (time < 100000){
-			Generator.sendTo = random(q);
+		//	Generator.sendTo = round_robin(q);
+		//	Generator.getValue(round_robin(q));
 
     		actSignal = SignalList.FetchSignal();
     		time = actSignal.arrivalTime;
@@ -103,9 +104,14 @@ public class MainSimulation extends Global{
     	//Finally the result of the simulation is printed below:
 
 		int counter = 1;
+		//double sum=0.0;
+		
 		for (QS queue : q){
+			//sum += (1.0*queue.accumulated/queue.noMeasurements);
 			System.out.println("Mean number of jobs in Q" + counter + ": "  + (1.0*queue.accumulated/queue.noMeasurements));
 			counter++;
 		}
+		//System.out.println("tot"  + ": "  + sum);
+
     }
 }

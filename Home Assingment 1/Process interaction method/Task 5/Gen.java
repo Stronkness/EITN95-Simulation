@@ -14,14 +14,18 @@ class Gen extends Proc{
 	//There are two parameters:
 	public Proc sendTo;    //Anger till vilken process de genererade kunderna ska skickas //Where to send customers
 	public double lambda;  //Hur många per sekund som ska generas //How many to generate per second
-
+    public MainSimulation sim= new MainSimulation();
+	public QS[] qs ;
 	//Här nedan anger man vad som ska göras när en signal kommer //What to do when a signal arrives
 	public void TreatSignal(Signal x){
 		switch (x.signalType){
 			case READY:{
+				sendTo= MainSimulation.random(qs);
 				SignalList.SendSignal(ARRIVAL, sendTo, time);
 				SignalList.SendSignal(READY, this, time + (2.0/lambda)*slump.nextDouble());}
 				break;
 		}
 	}
+
+		
 }
