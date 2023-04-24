@@ -5,10 +5,13 @@ import java.io.*;
 // signal names without dot notation
 class QS extends Proc {
 	public int numberInQueue = 0, accumulated, noMeasurements, numberOfArrivals, specialDone, normalDone;
+	public double normalQueueTime = 0, specialQueueTime = 0;
 	public Proc sendTo;
+	public double lambda;
 	Random slump = new Random();
 	double[] probs = { 0.1, 0.2, 0.5 };
-	LinkedList<String> customers = new LinkedList<String>();
+	LinkedList<Double> normalCustomers = new LinkedList<Double>();
+	LinkedList<Double> specialCustomers = new LinkedList<Double>();
 
 	public void TreatSignal(Signal x) {
 		switch (x.signalType) {
@@ -16,39 +19,38 @@ class QS extends Proc {
 			case ARRIVAL: {
 				double rand = slump.nextDouble();
 
-				if (probs[1] > rand) {
-					customers.addFirst("Special");
+				if (probs[2] > rand) {
+					specialCustomers.addLast(time);
 				} else {
-					customers.addLast("Normal");
+					normalCustomers.addLast(time);
 				}
 
 				numberOfArrivals++;
 				numberInQueue++;
 				if (numberInQueue == 1) {
-					SignalList.SendSignal(READY, this, time + Math.log(slump.nextDouble()) * (-(double) (4 * 60)));
+					SignalList.SendSignal(READY, this, time + Math.log(1 - slump.nextDouble()) / (-lambda));
 				}
 			}
 				break;
 
 			case READY: {
-				numberInQueue--;
-				if (sendTo != null) {
-					SignalList.SendSignal(ARRIVAL, sendTo, time + Math.log(slump.nextDouble()) * (-(double) (5 * 60)));
+				if (specialCustomers.size() > 0) {
+					specialQueueTime += time - specialCustomers.pop();
+					specialDone++;
+				} else {
+					normalQueueTime += time - normalCustomers.pop();
+					normalDone++;
 				}
+
+				numberInQueue--;
+
 				if (numberInQueue > 0) {
-					SignalList.SendSignal(READY, this, time + Math.log(slump.nextDouble()) * (-(double) (4 * 60)));
+					SignalList.SendSignal(READY, this, time + Math.log(1 - slump.nextDouble()) / (-lambda));
 				}
 			}
 				break;
 
 			case MEASURE: {
-				String person = customers.poll();
-				if (person == "Special") {
-					specialDone++;
-				} else {
-					normalDone++;
-				}
-
 				noMeasurements++;
 				accumulated = accumulated + numberInQueue;
 				SignalList.SendSignal(MEASURE, this, time + 2 * slump.nextDouble());
