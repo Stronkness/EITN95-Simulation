@@ -3,59 +3,57 @@ import java.io.*;
 
 // This class defines a simple queuing system with one server. It inherits Proc so that we can use time and the
 // signal names without dot notation
-class QS extends Proc{
+class QS extends Proc {
 	public int numberInQueue = 0, accumulated, noMeasurements, numberOfArrivals, specialDone, normalDone;
 	public Proc sendTo;
 	Random slump = new Random();
-	double[] probs = {0.1, 0.2, 0.5};
+	double[] probs = { 0.1, 0.2, 0.5 };
 	LinkedList<String> customers = new LinkedList<String>();
 
-	public void TreatSignal(Signal x){
-		switch (x.signalType){
+	public void TreatSignal(Signal x) {
+		switch (x.signalType) {
 
-			case ARRIVAL:{
-				// int randomIndex = slump.nextInt(probs.length);
-				// double prob = probs[randomIndex];
-				// System.out.println(prob);
-				double prob = 0.5;
+			case ARRIVAL: {
 				double rand = slump.nextDouble();
 
-				if (prob > rand){
+				if (probs[1] > rand) {
 					customers.addFirst("Special");
-				}
-				else{
+				} else {
 					customers.addLast("Normal");
 				}
 
 				numberOfArrivals++;
 				numberInQueue++;
-				if (numberInQueue == 1){
-					SignalList.SendSignal(READY,this, time + Math.log(slump.nextDouble())*(-(double)(4*60)));
+				if (numberInQueue == 1) {
+					SignalList.SendSignal(READY, this, time + Math.log(slump.nextDouble()) * (-(double) (4 * 60)));
 				}
-			} break;
+			}
+				break;
 
-			case READY:{
+			case READY: {
 				numberInQueue--;
-				if (sendTo != null){
-					SignalList.SendSignal(ARRIVAL, sendTo, time + Math.log(slump.nextDouble())*(-(double)(5*60)));
+				if (sendTo != null) {
+					SignalList.SendSignal(ARRIVAL, sendTo, time + Math.log(slump.nextDouble()) * (-(double) (5 * 60)));
 				}
-				if (numberInQueue > 0){
-					SignalList.SendSignal(READY, this, time + Math.log(slump.nextDouble())*(-(double)(4*60)));
+				if (numberInQueue > 0) {
+					SignalList.SendSignal(READY, this, time + Math.log(slump.nextDouble()) * (-(double) (4 * 60)));
 				}
-			} break;
+			}
+				break;
 
-			case MEASURE:{
+			case MEASURE: {
 				String person = customers.poll();
-				if (person == "Special"){
+				if (person == "Special") {
 					specialDone++;
-				}else{
+				} else {
 					normalDone++;
 				}
 
 				noMeasurements++;
 				accumulated = accumulated + numberInQueue;
-				SignalList.SendSignal(MEASURE, this, time + 2*slump.nextDouble());
-			} break;
+				SignalList.SendSignal(MEASURE, this, time + 2 * slump.nextDouble());
+			}
+				break;
 		}
 	}
 }

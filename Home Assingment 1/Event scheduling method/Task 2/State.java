@@ -1,25 +1,24 @@
 import java.util.*;
 import java.io.*;
 
-class State extends GlobalSimulation{
-	
+class State extends GlobalSimulation {
+
 	// Here follows the state variables and other variables that might be needed
 	// e.g. for measurements
-	public int numberInQueue = 0, accumulated = 0, noMeasurements = 0;
-	public static final int ARRIVAL_A = 1, READY_A = 2, MEASURE = 3; // The events, add or remove if needed!
-	public static final int ARRIVAL_B = 4, READY_B = 5; // The events, add or remove if needed!
+	public int numberInQueue = 0, accumulated_A = 0, accumulated_B = 0, noMeasurements = 0;
+	public int total = 0;
+	public int customersBuffer_A = 0, customersBuffer_B = 0;
 	Random slump = new Random(); // This is just a random number generator
-	LinkedList<String> customers = new LinkedList<String>(); // Keep track of A and B
-	
-	
-	// The following method is called by the main program each time a new event has been fetched
-	// from the event list in the main loop. 
-	public void treatEvent(Event x){
-		switch (x.eventType){
+
+	// The following method is called by the main program each time a new event has
+	// been fetched
+	// from the event list in the main loop.
+	public void treatEvent(Event x) {
+		switch (x.eventType) {
 			case ARRIVAL_A:
 				arrival_A();
 				break;
-			case READY_A:
+			case READY:
 				ready_A();
 				break;
 			case MEASURE:
@@ -29,67 +28,67 @@ class State extends GlobalSimulation{
 				arrival_B();
 				break;
 			// case READY_B:
-			// 	ready_B();
-			// 	break;
-				
+			// ready_B();
+			// break;
+
 		}
 	}
-	
-	
-	// The following methods defines what should be done when an event takes place. This could
-	// have been placed in the case in treatEvent, but often it is simpler to write a method if 
+
+	// The following methods defines what should be done when an event takes place.
+	// This could
+	// have been placed in the case in treatEvent, but often it is simpler to write
+	// a method if
 	// things are getting more complicated than this.
-	
-	private void arrival_A(){
-		if (numberInQueue() == 0){
-			insertEvent(READY_A, time + 0.002);
-		}
-			
-		customers.addLast("A");
-		insertEvent(ARRIVAL_A, time + Math.abs((double)1/150 * Math.log(1 - slump.nextDouble()))); // Kanske ARRIVAL_B??
+
+	/* Add to customer buffer and accummulated */
+	private void arrival_A() {
+		customersBuffer_A++;
+		accumulated_A++;
+
+		insertEvent(ARRIVAL_A, time + Math.abs((double) 1 / 150 * Math.log(1 - slump.nextDouble()))); // Kanske
+																										// ARRIVAL_B??
 	}
-	
-	private void arrival_B(){
-		if (numberInQueue() == 0) insertEvent(READY_A, time + 0.004);
-		customers.addFirst("B");
-	}
-	
-	/* The idea here is to first check if the head in the customers list
-	 * is "A", it thats the case we send it to ARRIVAL_B to get ready to be
-	 * converted to a "B" and go through the queue one more time.
-	 * Then we must check if the customers list contains something, if it does
-	 * we check the first element again but does peek() this time as we only
-	 * want to send a READY statement with the correct service time of the 
-	 * first element in the queue
+
+	/*
+	 * Add to customer buffer and accummulated, same as A but no Event as its the
+	 * final destination
 	 */
-	private void ready_A(){
-		String temp = customers.poll(); // removeFirst() not working as it gaev exception when null
-		if(temp != null){
-			if(temp.equals("A")) insertEvent(READY_A, time + 1); // 1 is d, delay
-			else insertEvent(ARRIVAL_B, time + 1);
+	private void arrival_B() {
+		customersBuffer_B++;
+		accumulated_B++;
+	}
+
+	/*
+	 * Determines the priority of the system. If the buffer for B is bigger than 0
+	 * that means that we must choose B as the next customer to be served as it has
+	 * higher priority.
+	 * If the buffer for B is empty we check the buffer for A.
+	 */
+	private void ready_A() {
+		double chosen = 0.002;
+
+		// This is when A has higher priority than B in the Task
+		if (customersBuffer_A > 0) {
+			customersBuffer_A--;
+			insertEvent(ARRIVAL_B, time + 1);
+		} else if (customersBuffer_B > 0) {
+			customersBuffer_B--;
+			chosen = 0.004;
 		}
 
-		if(!customers.isEmpty()){
-			if(customers.peek().equals("B")) insertEvent(READY_A, time + 0.004);
-			else insertEvent(READY_A, time + 0.002);
-		}
+		insertEvent(READY, time + chosen);
 	}
-	
-	private void ready_B(){
-		//numberofB--;
-		// insertEvent?
-		//TODO: Check priority
-	}
-	
-	private void measure(){
-		accumulated = accumulated + numberInQueue();
+
+	/* Add to total and noMeasurements */
+	private void measure() {
+		total = total + numberInQueue();
 		noMeasurements++;
 		insertEvent(MEASURE, time + 0.1);
 	}
 
-	private int numberInQueue(){
-		return customers.size();
+	/* Get number of customers in queue */
+	private int numberInQueue() {
+		return customersBuffer_A + customersBuffer_B;
 	}
-
 
 }
