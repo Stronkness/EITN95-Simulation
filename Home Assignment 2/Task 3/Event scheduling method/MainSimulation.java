@@ -1,5 +1,7 @@
 import java.util.*;
 import java.io.*;
+import java.time.Period;
+
 
 public class MainSimulation extends GlobalSimulation{
  
@@ -8,16 +10,19 @@ public class MainSimulation extends GlobalSimulation{
 
  double balance=0.0;
  int months=1;
+ int counter_month=1;
 	writeToFile(months,money); 
 	balance += money;
-	while( !(months>48)){
-		balance +=  money +balance*0.025 ;
+	while(!(balance>=2000000)){
+	if(months!=48){
+		balance +=  money + balance*0.025 ;
 		months++;
-		writeToFile(months,balance);
-	}			
-
-
-double val = ranodmly_selected();
+		counter_month ++;
+		writeToFile(counter_month,balance);
+		
+	}else{
+	double val = ranodmly_selected();
+	writeToFile(val);
 if(val== 0.1){
 	balance= market_dis(0.25,  balance);
 	
@@ -29,8 +34,13 @@ if(val== 0.1){
 }else{
 	balance=market_dis(0.1,  balance);
 }
-
-	return balance;
+months=0;
+	}			
+	}
+	counter_month++;
+	writeToFile(counter_month,balance);	
+	//return balance;
+	return counter_month;
  }
  /**
   * uniformly distributed the disturbances
@@ -60,6 +70,11 @@ if(val== 0.1){
 	writer.write(month + "\t" + money + "\n");
 	writer.close();
 }
+public static void writeToFile(double v) throws IOException {
+	FileWriter writer = new FileWriter("plots.txt",true);
+	writer.write( v+ "\n");
+	writer.close();
+}
 
 
 
@@ -79,6 +94,9 @@ if(val== 0.1){
     	
     	// Printing the result of the simulation, in this case a mean value
     	//System.out.println(1.0*actState.accumulated/actState.noMeasurements);
-		System.out.println("the money is "+ task3(20000.0) + "Kr" );
+		double year= task3(20000.0);
+		Period time= Period.ofMonths( (int) year ).normalized();
+		System.out.println("I takes "+ time.getYears() + " years " +time.getMonths()+ " months");
+
     }
-}
+} 
